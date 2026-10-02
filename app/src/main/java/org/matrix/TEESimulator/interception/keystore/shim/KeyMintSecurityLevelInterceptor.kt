@@ -1516,6 +1516,7 @@ class KeyMintSecurityLevelInterceptor(
         private const val KEYMINT_INVALID_INPUT_LENGTH = -21
         private const val KEYMINT_INVALID_ARGUMENT = -38
         private const val KEYMINT_INCOMPATIBLE_PURPOSE = -3
+        private const val KEYMINT_PURPOSE_ATTEST_KEY = 0x20000300
         private const val RESPONSE_INVALID_ARGUMENT = 20
         private const val RESPONSE_PERMISSION_DENIED = 6
         private const val RESPONSE_KEY_NOT_FOUND = 7
