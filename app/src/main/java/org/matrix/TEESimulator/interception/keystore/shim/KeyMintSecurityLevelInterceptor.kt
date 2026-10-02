@@ -697,8 +697,8 @@ class KeyMintSecurityLevelInterceptor(
                 // Here, the mixed use is explicitly rejected to avoid the -49 caused by the subsequent attest   
                 // key cache miss.
                 val mixedPurposeList = parsedParams.purpose
-                val hasAttestKeyPurpose = mixedPurposeList.contains(Tag.PURPOSE_ATTEST_KEY)
-                val hasOtherPurpose = mixedPurposeList.any { it != Tag.PURPOSE_ATTEST_KEY }
+                val hasAttestKeyPurpose = mixedPurposeList.contains(KEYMINT_PURPOSE_ATTEST_KEY)
+                val hasOtherPurpose = mixedPurposeList.any { it != KEYMINT_PURPOSE_ATTEST_KEY }
                 if (hasAttestKeyPurpose && hasOtherPurpose) {
                     SystemLogger.warning(
                         "[TX_ID: $txId] Rejecting mixed-purpose key " +
