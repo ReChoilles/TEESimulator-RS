@@ -690,6 +690,23 @@ class KeyMintSecurityLevelInterceptor(
                     logProbe("REJECT:cannot_attest_ids")
                     return InterceptorUtils.createErrorReply(KEYMINT_CANNOT_ATTEST_IDS)
                 }
+                
+                // KeyMint Specification: Keys with the purpose of ATTEST_KEY must not be mixed with any
+                // other purpose.
+                // The real machine directly returns INCOMPATIBLE_PURPOSE (-3) in the generateKey stage.
+                // Here, the mixed use is explicitly rejected to avoid the -49 caused by the subsequent attest   
+                // key cache miss.
+                val mixedPurposeList = parsedParams.purpose
+                val hasAttestKeyPurpose = mixedPurposeList.contains(Tag.PURPOSE_ATTEST_KEY)
+                val hasOtherPurpose = mixedPurposeList.any { it != Tag.PURPOSE_ATTEST_KEY }
+                if (hasAttestKeyPurpose && hasOtherPurpose) {
+                    SystemLogger.warning(
+                        "[TX_ID: $txId] Rejecting mixed-purpose key " +
+                            "(ATTEST_KEY + other purpose): $mixedPurposeList"
+                    )
+                    logProbe("REJECT:mixed_purpose")
+                    return InterceptorUtils.createErrorReply(KEYMINT_INCOMPATIBLE_PURPOSE)
+                }
 
                 val isSymmetric =
                     parsedParams.algorithm == Algorithm.AES ||
@@ -1498,6 +1515,7 @@ class KeyMintSecurityLevelInterceptor(
         private const val MAX_ALIAS_LENGTH = 256 * 1024
         private const val KEYMINT_INVALID_INPUT_LENGTH = -21
         private const val KEYMINT_INVALID_ARGUMENT = -38
+        private const val KEYMINT_INCOMPATIBLE_PURPOSE = -3
         private const val RESPONSE_INVALID_ARGUMENT = 20
         private const val RESPONSE_PERMISSION_DENIED = 6
         private const val RESPONSE_KEY_NOT_FOUND = 7
